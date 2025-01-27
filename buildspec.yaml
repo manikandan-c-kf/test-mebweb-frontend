@@ -1,0 +1,33 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo prebuild phase
+      - echo $CODEBUILD_INITIATOR
+      - echo $CODEBUILD_RESOLVED_SOURCE_VERSION
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - echo $COMMIT_HASH
+      - CLOUDFRONT_ID="E2HIJTZNTDWQY";
+      - S3_BUCKET=mebwebfrontend;
+  build:
+    commands:
+      - echo Build started on `date`
+      - npm install
+      - npm run build
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Deploying to S3 ${S3_BUCKET}...
+      - aws s3 sync ./build s3://${S3_BUCKET}/
+      - echo Clearing CloudFront cache for index.html
+      - aws configure set preview.cloudfront true
+      - echo CLOUDFRONT_ID $CLOUDFRONT_ID
+      - |
+        for ID in ${CLOUDFRONT_ID}
+          do
+            aws cloudfront create-invalidation --distribution-id=${ID} --paths=/index.html
+        done
+cache:
+  paths:
+    - 'node_modules/**/*'
