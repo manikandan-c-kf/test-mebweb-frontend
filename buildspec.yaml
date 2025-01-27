@@ -23,11 +23,7 @@ phases:
       - echo Clearing CloudFront cache for index.html
       - aws configure set preview.cloudfront true
       - echo CLOUDFRONT_ID $CLOUDFRONT_ID
-      - |
-        for ID in ${CLOUDFRONT_ID}
-          do
-            aws cloudfront create-invalidation --distribution-id=${ID} --paths=/index.html
-        done
+      - aws cloudfront create-invalidation --distribution-id=${CLOUDFRONT_ID} --paths=/index.html
 cache:
   paths:
     - 'node_modules/**/*'
