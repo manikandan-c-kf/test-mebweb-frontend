@@ -8,8 +8,11 @@ phases:
       - echo $CODEBUILD_RESOLVED_SOURCE_VERSION
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - echo $COMMIT_HASH
-      - CLOUDFRONT_ID="E2HIJTZNTDWQY";
-      - S3_BUCKET=mebwebfrontend;
+      - echo "Fetching parameters from AWS Systems Manager Parameter Store..."
+      - CLOUDFRONT_ID=$(aws ssm get-parameter --name CLOUDFRONT_ID --query "Parameter.Value" --output text)
+      - S3_BUCKET=$(aws ssm get-parameter --name S3_BUCKET --query "Parameter.Value" --output text)
+      - echo "CLOUDFRONT_ID=${CLOUDFRONT_ID}"
+      - echo "S3_BUCKET=${S3_BUCKET}"
   build:
     commands:
       - echo Build started on `date`
