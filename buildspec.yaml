@@ -13,6 +13,7 @@ phases:
       - S3_BUCKET=$(aws ssm get-parameter --name S3_BUCKET --query "Parameter.Value" --output text)
       - echo "CLOUDFRONT_ID=${CLOUDFRONT_ID}"
       - echo "S3_BUCKET=${S3_BUCKET}"
+      - echo pre build completed
   build:
     commands:
       - echo Build started on `date`
